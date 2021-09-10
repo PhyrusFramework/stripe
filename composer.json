@@ -1,0 +1,20 @@
+{
+    "name": "phyrus/stripe",
+    "version": "0.0.3",
+    "description": "Phyrus Stripe module",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Phyrus",
+            "email": "framework@phyrus.org"
+        }
+    ],
+    "autoload": {
+        "files": ["/index.php"]
+    },
+    "require": {
+        "phyrus/framework": "^0.0.3",
+        "stripe/stripe-php": "^7.88"
+    }
+}
