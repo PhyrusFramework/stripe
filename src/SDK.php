@@ -2,6 +2,9 @@
 
 class StripeSDK {
 
+    /**
+     * Include Stripe JS SDK into this page.
+     */
     public static function use() {
         Head::add(function() {?>
         <script src="<?= Path::toRelative(__DIR__) . '/assets/Stripe.js' ?>"></script>
@@ -9,6 +12,11 @@ class StripeSDK {
         <?php });
     }
     
+    /**
+     * Initialize a Credit Card form in the current page.
+     * 
+     * @param mixed $options
+     */
     public static function initCardForm($options = []) { 
 
         Footer::add(function() use($options) {
@@ -67,6 +75,9 @@ StripeSDK.onLoad(function(){
         });
     }
 
+    /**
+     * Embed a Credit Card Widget form in the current papge.
+     */
     public static function CardWidget() {?>
 <div id="card-widget">
     
@@ -157,6 +168,9 @@ StripeSDK.onLoad(function(){
         ]);
     }
 
+    /**
+     * Embed a Credit Card form in the current page.
+     */
     public static function CardForm() {?>
     <div id="card-form">
     

@@ -1,6 +1,6 @@
 {
     "name": "phyrus/stripe",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Phyrus Stripe module",
     "type": "library",
     "license": "MIT",
@@ -14,7 +14,7 @@
         "files": ["/index.php"]
     },
     "require": {
-        "phyrus/framework": "^0.0.3",
+        "phyrus/framework": "^0.0.4",
         "stripe/stripe-php": "^7.88"
     }
 }

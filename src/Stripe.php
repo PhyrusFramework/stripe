@@ -4,6 +4,9 @@ class Stripe {
 
     private static $client;
 
+    /**
+     * Get Stripe API client.
+     */
     public static function getClient() {
         if (self::$client == null) {
             new Stripe();

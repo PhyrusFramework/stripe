@@ -91,8 +91,6 @@ class StripeInvoice {
             'period_start'
         ];
 
-        DebugConsole::log('CREATED', $invoice->created);
-
         foreach($times as $time) {
             if (is_int($invoice->{$time}))
                 $this->{$time} = Time::fromTimestamp($invoice->{$time});
