@@ -2,6 +2,26 @@
 
 class StripePayment {
 
+    /**
+     * Retrieve a payment by its id
+     * 
+     * @param string $id
+     * 
+     * @return StripePayment
+     */
+    public static function retrieve(string $id) : StripePayment {
+        $inv = Stripe::getClient()->paymentIntents->retrieve($id);
+        return new StripePayment($inv);
+    }
+
+    /**
+     * Create a new payment.
+     * 
+     * @param float amount
+     * @param array $options
+     * 
+     * @return StripePayment
+     */
     public static function create($amount, array $options = []) : StripePayment {
 
         $cur = empty($options['currency']) ? Config::get('stripe.defaultCurrency', 'USD') : $options['currency'];
@@ -29,6 +49,11 @@ class StripePayment {
 
     }
 
+    /**
+     * Original payment intent from Stripe
+     * 
+     * @var mixed $paymentIntent
+     */
     private $paymentIntent;
 
     public function __construct($paymentIntent) {
@@ -45,6 +70,9 @@ class StripePayment {
 
     }
 
+    /**
+     * Get main payment data as an array
+     */
     public function export() {
         return [
             'id' => $this->id,
@@ -55,10 +83,28 @@ class StripePayment {
         ];
     }
 
+    /**
+     * Carry out this payment with a payment method.
+     * 
+     * @param string $paymentMethod (ID)
+     */
     public function pay(string $paymentMethod) {
         Stripe::getClient()->paymentIntents->confirm($this->id, [
             'payment_method' => $paymentMethod
         ]);
+    }
+
+    /**
+     * Get invoice for this payment.
+     * 
+     * @return StripeInvoice
+     */
+    public function getInvoice() : ?StripeInvoice {
+        if ($this->paymentIntent->invoice == null) {
+            return null;
+        }
+
+        return StripeInvoice::retrieve($this->paymentIntent->invoice);
     }
 
 }

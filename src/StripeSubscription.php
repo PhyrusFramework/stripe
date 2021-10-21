@@ -2,11 +2,31 @@
 
 class StripeSubscription {
 
-    public static function create($id, $data) {
+    /**
+     * Retrieve a Subscription by its id
+     * 
+     * @param string Stripe subscription ID
+     * 
+     * @return StripeSubscription
+     */
+    public static function retrieve(string $id) : StripeSubscription {
+        $sub = Stripe::getClient()->subscriptions->retrieve($id);
+        return new StripeSubscription($sub);
+    }
+
+    /**
+     * Create a new subscription
+     * 
+     * @param string Stripe price ID
+     * @param array $data
+     * 
+     * @return StripeSubscription
+     */
+    public static function create(string $priceId, array $data) : StripeSubscription {
 
         $ops = [
             'items' => [
-                ['price' => $id]
+                ['price' => $priceId]
             ]
         ];
 
@@ -28,11 +48,9 @@ class StripeSubscription {
 
     }
 
-    public static function retrieve($id) {
-        $sub = Stripe::getClient()->subscriptions->retrieve($id);
-        return new StripeSubscription($sub);
-    }
-
+    /**
+     * @var object Stripe subscription object.
+     */
     private $subscription;
 
     function __construct($subscription) {
@@ -66,21 +84,55 @@ class StripeSubscription {
         $this->{'status'} = $subscription->status;
     }
 
+    /**
+     * Cancel subscription
+     */
     public function cancel() {
         try {
-        Stripe::getClient()->subscriptions->cancel($this->id);
-        } catch(Exception $e) {}
+            Stripe::getClient()->subscriptions->cancel($this->id);
+            return true;
+        } catch(Exception $e) {
+            return $e->getMessage();
+        }
     }
 
+    /**
+     * Get Subscription Customer object
+     * 
+     * @return StripeCustomer
+     */
+    public function getCustomer() : StripeCustomer {
+        return StripeCustomer::retrieve($this->customer);
+    }
+
+    /**
+     * Get last invoice of this Subscription
+     * 
+     * @return StripeInvoice
+     */
     public function getLastInvoice() {
         return new StripeInvoice($this->last_invoice);
     }
 
-    public function getInvoices() {
-        $list = Stripe::getClient()->invoices->all([
+    /**
+     * Get invoices for this Subscription.
+     * 
+     * @param string invoice status
+     * 
+     * @return StripeInvoice[]
+     */
+    public function getInvoices(string $status = 'all') : array {
+        $filter = [
             'limit' => 100,
-            'subscription' => $this->id
-        ]);
+            'subscription' => $this->id,
+            'customer' => $this->customer
+        ];
+
+        if ($status != 'all') {
+            $filter['status'] = $status;
+        }
+
+        $list = Stripe::getClient()->invoices->all($filter);
 
         $invs = [];
         foreach($list as $item) {

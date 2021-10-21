@@ -9,5 +9,5 @@ autoload(['Stripe', 'Stripe*'], [
     __DIR__ . '/src/StripePayment.php',
     __DIR__ . '/src/StripeSubscription.php',
     __DIR__ . '/src/StripeInvoice.php',
-    __DIR__ . '/src/StripeAjax.php'
+    __DIR__ . '/src/StripePurchase.php'
 ]);

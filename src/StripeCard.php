@@ -12,7 +12,7 @@ class StripeCard {
      * 
      * @return StripeCard
      */
-    public static function create(string $cardNumber, string $cardExpiry, string $cvc, array $extras = []) : StripeCard {
+    public static function create(string $cardNumber, string $cardExpiry, string $cvc, array $extras = []) : ?StripeCard {
 
         $client = Stripe::getClient();
 

@@ -2,6 +2,9 @@
 
 class Stripe {
 
+    /**
+     * @var StripeClient
+     */
     private static $client;
 
     /**

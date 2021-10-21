@@ -39,7 +39,7 @@ class StripeCustomer {
      * 
      * @return array
      */
-    private function props() {
+    private function props() : array {
         return [
             'id',
             'object',
@@ -70,7 +70,7 @@ class StripeCustomer {
      * 
      * @return array
      */
-    public function export() {
+    public function export() : array {
         $obj = [];
         foreach($this->props() as $prop) {
             $obj[$prop] = $this->{$prop};
@@ -100,7 +100,7 @@ class StripeCustomer {
      * @param StripeCard $card
      * @param bool $setAsDefault
      */
-    public function attachCard(StripeCard $card, $setAsDefault = false) {
+    public function attachCard($card, $setAsDefault = false) {
 
         Stripe::getClient()->paymentMethods->attach(
             is_string($card) ? $card : $card->id,
@@ -175,23 +175,8 @@ class StripeCustomer {
      * 
      * @param array $items
      */
-    public function purchase($items) {
-
-        $products = [];
-
-        if (is_array($items)) {
-            foreach($items as $item) {
-                $products[] = ['price' => $item];
-            }
-        } else {
-            $products[] = ['price' => $items];
-        }
-
-        return Stripe::getClient()->invoiceItems->create([
-            'customer' => $this->id,
-            'items' => $products
-        ]);
-
+    public function purchase(string $item, int $quantity = 1) : StripePurchase {
+        return StripePurchase::create($this, $item, $quantity);
     }
 
     /**

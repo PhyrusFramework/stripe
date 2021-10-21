@@ -2,11 +2,21 @@
 
 class StripeInvoice {
 
+    /**
+     * Retrive Stripe invoice by its ID
+     * 
+     * @param string $id
+     * 
+     * @return StripeInvoice
+     */
     static function retrieve(string $id) : StripeInvoice {
         $inv = Stripe::getClient()->invoices->retrieve($id);
         return new StripeInvoice($inv);
     }
 
+    /**
+     * @var object Stripe invoice data
+     */
     private $invoice;
 
     function __construct($invoice) {
@@ -14,7 +24,7 @@ class StripeInvoice {
         $this->invoice = $invoice;
 
         $this->{'id'} = $invoice->id;
-        $this->{'ID'} = $invoice->ID;
+        $this->{'ID'} = $invoice->id;
 
         $attrs = [
             'attempted',
@@ -46,9 +56,7 @@ class StripeInvoice {
             'status',
             'status_transitions',
             'subscription',
-            'subtotal',
             'tax',
-            'total',
             'total_discount_amounts',
             'total_tax_amounts',
             'transfer_data'
@@ -64,10 +72,13 @@ class StripeInvoice {
         ]);
 
         $this->{'amount'} = new Generic([
-            'due' => $invoice->amount_due,
-            'paid' => $invoice->amount_paid,
-            'remaining' => $invoice->amount_remaining
+            'due' => $invoice->amount_due / 100,
+            'paid' => $invoice->amount_paid / 100,
+            'remaining' => $invoice->amount_remaining / 100
         ]);
+
+        $this->{'total'} = $invoice->total / 100;
+        $this->{'subtotal'} = $invoice->subtotal / 100;
 
         $this->{'customer'} = new Generic([
             'id' => $invoice->customer,
@@ -82,7 +93,7 @@ class StripeInvoice {
         $this->{'url'} = $invoice->hosted_invoice_url;
         $this->{'pdf'} = $invoice->invoice_pdf;
 
-        $this->{'lines'} = $invoice->lines['data'];
+        $this->{'lines'} = $invoice->lines;
 
         $times = [
             'created',
@@ -105,12 +116,41 @@ class StripeInvoice {
 
     }
 
-    public function getCustomer() {
+    /**
+     * Get Customer of this invoice.
+     * 
+     * @return StripeCustomer
+     */
+    public function getCustomer() : StripeCustomer {
         return StripeCustomer::retrieve($this->customer->id);
     }
 
-    public function getSubscription() {
+    /**
+     * Get Subscription attached to this invoice, if there is.
+     * 
+     * @return StripeSubscription
+     */
+    public function getSubscription() : ?StripeSubscription {
+        if (empty($this->subscription)) {
+            return null;
+        }
         return StripeSubscription::retrieve($this->subscription);
+    }
+
+    /**
+     * Is this invoice fully paid?
+     * 
+     * @return bool
+     */
+    public function isPaid() {
+        return $this->amount->remaining == 0;
+    }
+
+    /**
+     * Attempt to pay this invoice again.
+     */
+    public function pay() {
+        Stripe::getClient()->invoices->pay($this->id);
     }
 
 }

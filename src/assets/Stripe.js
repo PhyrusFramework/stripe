@@ -73,7 +73,7 @@ class StripeSDK {
 
             Ajax.post('Stripe.Payment', {amount: amount, options: options})
             .then(response => {
-                let json = JSON.parse(response);
+                let json = response;
                 resolve({
                     intent: json,
                     checkout: (cardId) => {
