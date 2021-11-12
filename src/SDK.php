@@ -92,7 +92,9 @@ StripeSDK.onLoad(function(){
         <div id="cardExpiry"></div>
         <div id="cardCvc"></div>
     </div>
-</div>
+</div> <?php
+
+        Footer::add(function() { ?>
 <style>
 #card-widget {
     background: linear-gradient(to bottom right, #007ebb, #1ba1d4, #007ebb, #007ebb);
@@ -127,9 +129,9 @@ StripeSDK.onLoad(function(){
 #card-widget .card-form-bottom > #cardName {
     flex: 2;
 }
-
 </style>
-    <?php
+        <?php });
+
         self::initCardForm([
             'elements' => [
                 'cardNumber' => [
@@ -180,35 +182,38 @@ StripeSDK.onLoad(function(){
             <div id="cardExpiry"></div>
             <div id="cardCvc"></div>
         </div>
-    </div>
-    <style>
-    #card-form #cardNumber {
-        margin-top: 20px;
-        background: white;
-        border-radius: 5px;
-        border: solid 1px lightgray;
-        padding: 12px 12px;
-    }
-    #card-form .card-form-bottom {
-        display: flex;
-        align-items: center;
-        margin: 20px -15px 0 -15px;
-    }
-    #card-form .card-form-bottom > * {
-        flex: 1;
-        background: white;
-        border-radius: 5px;
-        border: solid 1px lightgray;
-        padding: 10px 12px;
-        margin: 0 15px;
-    }
-    #card-form .card-form-bottom > #cardName {
-        flex: 2;
-    }
+    </div> <?php
+
+        Footer::add(function() { ?>
+<style>
+#card-form #cardNumber {
+    margin-top: 20px;
+    background: white;
+    border-radius: 5px;
+    border: solid 1px lightgray;
+    padding: 12px 12px;
+}
+#card-form .card-form-bottom {
+    display: flex;
+    align-items: center;
+    margin: 20px -15px 0 -15px;
+}
+#card-form .card-form-bottom > * {
+    flex: 1;
+    background: white;
+    border-radius: 5px;
+    border: solid 1px lightgray;
+    padding: 10px 12px;
+    margin: 0 15px;
+}
+#card-form .card-form-bottom > #cardName {
+    flex: 2;
+}
+</style>
+
+        <?php });
     
-    </style>
-        <?php
-            self::initCardForm([
+        self::initCardForm([
             'elements' => [
                 'cardNumber' => [
                     'showIcon' => true,
