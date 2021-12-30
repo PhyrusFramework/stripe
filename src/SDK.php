@@ -33,42 +33,44 @@ class StripeSDK {
 
             $name = $options['name'] ?? 'Card'; ?>
 <script>
-StripeSDK.onLoad(function(){
+window.addEventListener('load', function() {
+    StripeSDK.onLoad(function(){
 
-    window['<?= $name ?>'] = StripeSDK.CardForm();
+        window['<?= $name ?>'] = StripeSDK.CardForm();
 
-    <?php foreach($el as $k => $ops) { ?>
-    <?= $name ?>.mount<?= ucfirst($k) ?>({
-        <?php 
-        if (isset($ops['style'])) {
-            echo 'style: { '; 
-                
-            $st = $ops['style'];
-            $list = ['base', 'invalid', 'empty', 'complete'];
+        <?php foreach($el as $k => $ops) { ?>
+        <?= $name ?>.mount<?= ucfirst($k) ?>({
+            <?php 
+            if (isset($ops['style'])) {
+                echo 'style: { '; 
+                    
+                $st = $ops['style'];
+                $list = ['base', 'invalid', 'empty', 'complete'];
 
-            foreach($list as $item) {
-                if (!isset($st[$item])) {
-                    continue;
+                foreach($list as $item) {
+                    if (!isset($st[$item])) {
+                        continue;
+                    }
+                    echo "$item: ";
+                    Javascript::define_value($st[$item]);
+                    echo ', ';
                 }
-                echo "$item: ";
-                Javascript::define_value($st[$item]);
-                echo ', ';
+                echo "},\n";
             }
-            echo "},\n";
-        }
-        if (isset($ops['placeholder'])) {
-            echo "placeholder: '" . $ops['placeholder'] . "',\n";
-        }
-        if (isset($ops['showIcon']) && $ops['showIcon']) {
-            echo 'showIcon: true,' . "\n";
-        }
-        if (isset($ops['id'])) {
-            echo 'id: "' . $ops['id'] . '",' . "\n";
-        }
-        ?>
+            if (isset($ops['placeholder'])) {
+                echo "placeholder: '" . $ops['placeholder'] . "',\n";
+            }
+            if (isset($ops['showIcon']) && $ops['showIcon']) {
+                echo 'showIcon: true,' . "\n";
+            }
+            if (isset($ops['id'])) {
+                echo 'id: "' . $ops['id'] . '",' . "\n";
+            }
+            ?>
+        });
+        <?php } ?>
+        
     });
-    <?php } ?>
-    
 });
 </script>
             <?php
