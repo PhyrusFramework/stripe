@@ -4,4 +4,4 @@ The Stripe module for Phyrus simplifies the use of the Stripe PHP Library. Withi
 
     composer require phyrus/stripe
 
-Find the documentation in: https://phyrus.org/packages/stripe
+Find the documentation in: hhttps://phyrus.gitbook.io/phyrus-stripe/

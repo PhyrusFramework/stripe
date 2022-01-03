@@ -143,12 +143,12 @@ class StripeCustomer {
     /**
      * Remove Customer credit card
      * 
-     * @param string $cardId
+     * @param mixed $cardId
      */
-    public function removeCard(string $cardId) {
+    public function removeCard($card) {
 
         Stripe::getClient()->paymentMethods->detach(
-            $cardId,
+            is_string($card) ? $card : $card->id,
             []
         );
     }

@@ -153,4 +153,10 @@ class StripeInvoice {
         Stripe::getClient()->invoices->pay($this->id);
     }
 
+    /**
+     * Finalize the invoice
+     */
+    public function finalize() {
+        Stripe::getClient()->invoices->finalize($this->id);
+    }
 }
