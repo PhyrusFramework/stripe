@@ -176,7 +176,10 @@ class StripeCustomer {
      * @param array $items
      */
     public function purchase(string $item, int $quantity = 1) : StripePurchase {
-        return StripePurchase::create($this, $item, $quantity);
+        $purchase = new StripePurchase($this);
+        $purchase->addItem($item, $quantity);
+        $purchase->pay();
+        return $purchase;
     }
 
     /**

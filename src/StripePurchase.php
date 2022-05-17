@@ -2,6 +2,10 @@
 
 class StripePurchase {
 
+    private $customer;
+
+    private $invoice;
+
     /**
      * Retrieve a purchase by its ID
      * 
@@ -23,39 +27,13 @@ class StripePurchase {
      * 
      * @return StripePurchase
      */
-    static function create(StripeCustomer $customer, string $productId, int $quantity = 1) : StripePurchase {
+    static function create(StripeCustomer $customer) : StripePurchase {
 
-        $data = [
-            'customer' => $customer->id,
-            'price' => $productId
-        ];
-
-        if ($quantity > 1) {
-            $data['quantity'] = $quantity;
-        }
-
-        return new StripePurchase(Stripe::getClient()->invoiceItems->create($data));
+        return new StripePurchase($customer);
     }
 
-    /**
-     * @var object Stripe purchase data
-     */
-    private $data;
-
-    function __construct($data) {
-
-        $this->data = $data;
-
-        $this->{'id'} = $data->id;
-        $this->{'ID'} = $data->ID;
-
-        $this->{'amount'} = $data->amount / 100;
-        $this->{'currency'} = $data->currency;
-        $this->{'date'} = Time::fromTimestamp($data->date);
-        $this->{'description'} = $data->description;
-        $this->{'quantity'} = $data->quantity;
-        $this->{'unit_amount'} = $data->unit_amount / 100;
-        $this->{'product'} = $data->price->product;
+    function __construct(StripeCustomer $customer) {
+        $this->customer = $customer;
     }
 
     /**
@@ -72,12 +50,66 @@ class StripePurchase {
      * 
      * @return StripeInvoice
      */
-    public function getInvoice() : ?StripeInvoice {
-        if ($this->data->invoice == null) {
-            return null;
+    public function getInvoice($finalizePurchase = false) : ?StripeInvoice {
+        if ($this->invoice == null) {
+
+            if (!$finalizePurchase)
+                return null;
+
+            $inv = Stripe::getClient()->invoices->create([
+                'customer' => $this->customer->ID
+            ]);
+    
+            $invoice = new StripeInvoice($inv);
+            $this->invoice = $invoice;
+            return $invoice;
+        } else if ($this->invoice->url == null) {
+            $this->invoice = StripeInvoice::retrieve($this->invoice->ID);
         }
 
-        return StripeInvoice::retrieve($this->data->invoice);
+        return $this->invoice;
+    }
+
+    /**
+     * Add item to this purchase
+     * 
+     * @param string priceId
+     * @param int quantity
+     * 
+     * @return StripePurchase
+     */
+    public function addItem(string $priceId, int $quantity = 1) : StripePurchase {
+
+        $data = [
+            'customer' => $this->customer->ID,
+            'price' => $priceId
+        ];
+
+        if ($quantity > 1) {
+            $data['amount'] = $quantity;
+        }
+
+        Stripe::getClient()->invoiceItems->create($data);
+        return $this;
+    }
+
+    /**
+     * 
+     */
+    public function pay() {
+
+        if ($this->invoice == null) {
+            $inv = Stripe::getClient()->invoices->create([
+                'customer' => $this->customer->ID
+            ]);
+    
+            $invoice = new StripeInvoice($inv);
+            $this->invoice = $invoice;
+        }
+
+        $this->invoice->pay();
+
+        return $this;
     }
 
 }

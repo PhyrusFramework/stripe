@@ -1,6 +1,6 @@
 {
     "name": "phyrus/stripe",
-    "version": "0.0.8",
+    "version": "0.1.1",
     "description": "Phyrus Stripe module",
     "type": "library",
     "license": "MIT",

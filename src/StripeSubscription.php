@@ -111,7 +111,7 @@ class StripeSubscription {
      * @return StripeInvoice
      */
     public function getLastInvoice() {
-        return new StripeInvoice($this->last_invoice);
+        return StripeInvoice::retrieve($this->last_invoice);
     }
 
     /**
